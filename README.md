@@ -11,3 +11,8 @@ Recommended way to install this is via [KDE Store](https://store.kde.org/p/13886
  - KDE Frameworks `kirigami2` >= 5.67
  - Qt >= 5.12
  - QtCharts installed
+
+
+## Known workarounds
+
+If there are duplicated entries on startup, remove duplicated `symbols=` entry in `.config/plasma-org.kde.plasma.desktop-appletsrc` file.
