@@ -41,7 +41,7 @@ Item {
     //
     Plasmoid.compactRepresentation: Item {
 
-        Layout.minimumHeight: 50 * symbolsModel.count
+        Layout.minimumHeight: 54 * symbolsModel.count
 
         /*function localiseNumber(num) {
             if (typeof num === "string") {
