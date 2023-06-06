@@ -41,7 +41,7 @@ Item {
     //
     Plasmoid.compactRepresentation: Item {
 
-        Layout.minimumHeight: 25 * symbolsModel.count
+        Layout.minimumHeight: 50 * symbolsModel.count
 
         /*function localiseNumber(num) {
             if (typeof num === "string") {
@@ -65,6 +65,8 @@ Item {
                     PlasmaComponents3.Label {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignLeft
+
+                        height: 25
 
                         text: longName
                         // Sometimes it has HTML encoded characters
