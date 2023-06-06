@@ -26,13 +26,7 @@ import org.kde.plasma.components 3.0 as PlasmaComponents3
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 
 Item {
-    id: root
-
-    property bool loading: false
     property string lastUpdated
-
-    readonly property var symbols: plasmoid.configuration.symbols
-    readonly property int updateInterval: plasmoid.configuration.updateInterval
 
     Plasmoid.icon: Qt.resolvedUrl("./finance.svg")
 
@@ -90,9 +84,6 @@ Item {
     // Full Representation
     //
     Plasmoid.fullRepresentation: Item {
-
-        id: rootFull
-
         RowLayout {
             id: headerRow
             width: parent.width
@@ -100,14 +91,14 @@ Item {
             PlasmaExtras.Title {
                 id: title
                 Layout.fillWidth: true
+                Layout.preferredHeight: implicitHeight
                 text: stack.currentPage.title
             }
             PlasmaComponents3.ToolButton {
                 visible: stack.depth === 1
                 icon.name: "view-refresh"
                 onClicked: {
-                    timer.restart();
-                    rootFull.refresh();
+                    mainPage.refresh();
                 }
 
                 PlasmaComponents3.ToolTip {
@@ -124,10 +115,8 @@ Item {
                 }
             }
         }
-
         PlasmaComponents.PageStack {
             id: stack
-            initialPage: mainView
             anchors {
                 top: headerRow.bottom
                 left: parent.left
@@ -138,39 +127,18 @@ Item {
             }
         }
 
-        PlasmaComponents.Page {  // Ubuntu 20.04 doesn't have PlasmaComponents3.Page
-            id: mainView
-            readonly property string title: "Stocks"
-
-            PlasmaComponents3.ScrollView {
-                anchors.fill: parent
-                ListView {
-                    id: view
-
-                    model: symbolsModel
-                    delegate: StockQuoteDelegate {
-                        width: parent.width
-                        onPricesClicked: {
-                            stack.push(chartComponent, {symbol, stack});
-                        }
-                        onNamesClicked: {
-                            stack.push(profileComponent, {symbol, stack});
-                        }
-                    }
-                }
-            }
-        }
-
         PlasmaComponents3.Label {
             id: footer
             anchors.bottom: parent.bottom
-            anchors.right: parent.right
+            width: parent.width
 
             font.pointSize: theme.smallestFont.pointSize
             font.weight: Font.Thin
             font.underline: true
             opacity: 0.7
             linkColor: theme.textColor
+            elide: Text.ElideLeft
+            horizontalAlignment: Text.AlignRight
             text: "<a href='https://finance.yahoo.com/'>Powered by Yahoo! Finance</a>"
             onLinkActivated: Qt.openUrlExternally(link)
 
@@ -182,59 +150,13 @@ Item {
             }
         }
 
-        Component {
-            id: profileComponent
-            ProfilePage {}
-        }
-
-        Component {
-            id: chartComponent
-            PriceChart {}
-        }
-
-        PlasmaComponents3.BusyIndicator {
-            anchors.centerIn: parent
-            visible: loading
-            running: loading
-        }
-    }
-
-    function refresh() {
-        if (symbols && symbols.length > 0) {
-            loading = true;
-            worker.sendMessage({action: "modify", symbols: symbols, model: symbolsModel});
-        } else {
-            symbolsModel.clear();
-        }
-    }
-
-    WorkerScript {
-        id: worker
-        source: "../code/dataloader.mjs"
-        onMessage: {
-            loading = false;
-            lastUpdated = (new Date()).toLocaleString();
-            timer.restart();
+        MainPage {
+            id: mainPage
+            stack: stack
         }
 
         Component.onCompleted: {
-            // refresh on start up for the initial load
-            root.refresh();
-            // connecting signals here to avoid sending messages to the worker before it's ready
-            root.symbolsChanged.connect(root.refresh);
-        }
-    }
-
-    Timer {
-        id: timer
-        interval: updateInterval
-        running: true
-        repeat: true
-        onTriggered: {
-            if (symbolsModel.count > 0) {
-                loading = true;
-                worker.sendMessage({action: "refresh", model: symbolsModel});
-            }
+            stack.push(mainPage);
         }
     }
 }

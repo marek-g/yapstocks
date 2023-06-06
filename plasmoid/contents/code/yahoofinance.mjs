@@ -125,7 +125,8 @@ export function resolveMultipleQuotes(symbols) {
     if (symbols.length === 0) {
         return Promise.resolve([]);
     }
-    return httpRequestP(`https://query2.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(",")}&fields=symbol,longName,shortName,exchange,quoteType,regularMarketPrice,regularMarketTime,regularMarketChange,regularMarketVolume,regularMarketDayRange,regularMarketOpen,regularMarketChangePercent,marketCap`)
+    /** FIXME: no longer working
+    return httpRequestP(`https://query2.finance.yahoo.com/v6/finance/quote?symbols=${symbols.join(",")}&fields=symbol,longName,shortName,exchange,quoteType,regularMarketPrice,regularMarketTime,regularMarketChange,regularMarketVolume,regularMarketDayRange,regularMarketOpen,regularMarketChangePercent,marketCap`)
     .then((text) => {
         const resp = JSON.parse(text);
         if (resp.quoteResponse.error) {
@@ -153,6 +154,8 @@ export function resolveMultipleQuotes(symbols) {
             marketCap: result.marketCap || "N/A"
         }));
     });
+    */
+    return Promise.all(symbols.map(resolveQuote));
 }
 
 /**
