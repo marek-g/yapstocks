@@ -57,15 +57,28 @@ Item {
 
             model: symbolsModel
             delegate: PlasmaComponents.ListItem {
-                RowLayout {
-                    id: contentRow
-                    anchors.fill: parent
+                ColumnLayout {
+                    id: infoColumn
+                    Layout.fillWidth: true
+                    spacing: -1
 
                     PlasmaComponents3.Label {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignLeft
 
+                        text: longName
+                        // Sometimes it has HTML encoded characters
+                        // StyledText will render them nicely (and more performant than RichText)
+                        textFormat: Text.StyledText
+                        elide: Text.ElideMiddle
+                    }
+
+                    PlasmaComponents3.Label {
+                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignRight
+
                         height: 25
+                        font.weight: Font.Black
 
                         text: currentPrice
                     }
